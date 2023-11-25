@@ -1,38 +1,42 @@
-const fetchJoke=document.getElementById('fetchJoke')
-const jokeList=document.getElementById('jokeList')
 
-//https://api.chucknorris.io/jokes/random
-let chisteGuardar=JSON.parse(localStorage.getItem('chiste'))||[]  
+const fetchJoke = document.getElementById('fetchJoke');
+const jokeList = document.getElementById('jokeList');
+let chistesGuardados = []; 
 
-
-fetchJoke.addEventListener('click',()=>{
+fetchJoke.addEventListener('click', (e) => {
+    e.preventDefault()
     fetch('https://api.chucknorris.io/jokes/random')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('No responde');
-      }
-      return response.json()
-    })
-    .then(data => {
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Ha habido un error');
+            }
+            return res.json();
+        })
+        .then(chiste => {
 
-        let texto=data.value;
-        let html =`<li>
-        <p>${texto}</p>
-        <button id='btn'>Eliminar</button>
-        </li>`    
-        guardar(html)
 
-        const boton =document.getElementById('btn')
+            let parsel = `<li>${chiste.value}</li>`;
+            jokeList.innerHTML += parsel;
+            guardar(parsel);
+        })
+        .catch(error => {
+            console.error("Hubo un tremendo error", error);
+        });
+});
 
-boton.addEventListener('click',()=>{
-chisteGuardar.shift()
-})
+const guardar = (ele) => {
+    let nuevosChistes = JSON.parse(localStorage.getItem('chistes')) || [];
 
-    })})
+    nuevosChistes.push(ele);
 
-const guardar=(ele)=>{
-    chisteGuardar.push(ele)
-    localStorage.setItem('chiste',JSON.stringify(chisteGuardar))
-    jokeList.innerHTML=chisteGuardar
+    localStorage.setItem('chistes', JSON.stringify(nuevosChistes));
 
-}
+    jokeList.innerHTML = nuevosChistes.join('');
+};
+
+window.onload = () => {
+   let nuevosChistes = JSON.parse(localStorage.getItem('chistes')) || [];
+
+    jokeList.innerHTML = nuevosChistes.join('');
+   
+};
